@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>دموی مرکز خدمات سازمانی - بدون تب</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Tahoma,Arial;background:#f4f7fb;color:#24344c}
+:root{--blue:#2869c7;--navy:#173c69;--line:#dfe7f0;--muted:#78879a}
+.shell{display:flex;min-height:100vh}
+.sidebar{width:310px;background:#fff;border-right:1px solid var(--line);padding:17px 12px;position:fixed;left:-325px;right:auto;top:0;bottom:0;overflow:auto;z-index:50;transition:left .28s ease;box-shadow:8px 0 28px #172b4422}
+.sidebar.open{left:0}
+.drawer-overlay{position:fixed;inset:0;background:#0f172a55;opacity:0;visibility:hidden;transition:.25s;z-index:45}
+.drawer-overlay.show{opacity:1;visibility:visible}
+.dashboard-toggle{border:0;background:#2869c7;color:#fff;width:40px;height:40px;border-radius:10px;font-size:20px;cursor:pointer}
+.sidebar-close{position:absolute;left:12px;top:12px;border:0;background:#f1f5f9;border-radius:8px;width:29px;height:29px;cursor:pointer;font-size:17px}
+.sidebar-search{display:flex;align-items:center;gap:6px;border:1px solid #dce4ed;background:#f8fafc;border-radius:10px;padding:7px 9px;margin:4px 0 12px}
+.sidebar-search input{border:0;outline:0;background:transparent;width:100%;font-family:inherit;font-size:9px;padding:4px}
+.sidebar .profile,.sidebar>[data-page],.sidebar>.sep,.sidebar>.nav-title{display:none}
+.logo{font-size:16px;font-weight:bold;color:var(--navy);padding:8px 10px 20px}.profile{display:flex;gap:9px;align-items:center;background:#f5f8fc;padding:10px;border-radius:11px;margin-bottom:14px}.avatar{width:35px;height:35px;background:#dfe8f7;border-radius:50%;display:grid;place-items:center}.profile b{font-size:10px}.profile small{display:block;color:var(--muted);font-size:8px;margin-top:3px}
+.nav-title{font-size:8px;color:#9aa6b5;padding:13px 10px 6px}.nav{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:9px;font-size:10px;cursor:pointer;margin:2px 0}.nav:hover,.nav.on{background:#eaf2ff;color:#1859a8}.nav i{font-style:normal;font-size:16px;width:22px;text-align:center}.sep{border-top:1px solid #edf1f5;margin:10px 5px}
+.main{margin-right:0;width:100%}.top{height:64px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 3%;position:sticky;top:0;z-index:5}.top b{font-size:13px}.top-actions{margin-right:auto;display:flex;gap:8px}.chip{border:1px solid var(--line);border-radius:9px;padding:8px 10px;font-size:9px;background:#fff}
+.content{width:94%;max-width:1450px;margin:20px auto}.hero{background:linear-gradient(100deg,#e9f2ff,#fff);border:1px solid #d6e5f7;border-radius:16px;padding:20px;display:flex;justify-content:space-between;align-items:center}.hero h1{font-size:19px;margin:0 0 7px;color:var(--navy)}.hero p{font-size:10px;color:#6f7f92;margin:0}
+.search{background:#fff;border:1px solid #d7e1ec;border-radius:14px;padding:8px 12px;margin:14px 0;display:flex;align-items:center;gap:9px}.search input{border:0;outline:0;flex:1;padding:9px;font-family:inherit;font-size:11px}.search span{font-size:19px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:13px;display:flex;gap:11px;align-items:center}.stat i{font-style:normal;font-size:20px;background:#eef4ff;border-radius:9px;width:40px;height:40px;display:grid;place-items:center}.stat b{font-size:19px}.stat small{display:block;font-size:8px;color:var(--muted)}
+.panel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:14px}.title{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.title h2{font-size:14px;margin:0}.title span,.title button{font-size:8px;color:#2869c7;border:0;background:none;font-family:inherit;cursor:pointer}
+.favs{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}.fav{position:relative;border:1px solid #e1e8f0;border-radius:10px;padding:11px;background:#fbfdff;cursor:pointer}.fav .x{position:absolute;left:5px;top:5px;border:0;background:#f0f3f7;border-radius:50%;width:19px;height:19px;cursor:pointer;color:#7d8998}.fav i{font-style:normal;font-size:20px}.fav b{display:block;font-size:9px;margin-top:6px}.fav small{font-size:7px;color:#8290a1}
+.taskfilters{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}.taskfilters button{font-family:inherit;border:1px solid #dbe3ec;background:#fff;border-radius:8px;padding:6px 9px;font-size:8px;cursor:pointer}.taskfilters .on{background:#2869c7;color:#fff}
+table{width:100%;border-collapse:collapse;font-size:9px}th{background:#f7f9fc;color:#718096;padding:9px;text-align:right}td{padding:10px 9px;border-bottom:1px solid #edf1f5}.tag{background:#eef4fb;color:#315c88;padding:4px 7px;border-radius:7px}.status{padding:4px 7px;border-radius:10px}.action{background:#fee2e2;color:#a61b1b}.review{background:#fff3cd;color:#806000}.wait{background:#e8efff;color:#3158a7}.done{background:#dcfce7;color:#166534}.open{font-family:inherit;border:1px solid #ccd8e5;background:#fff;border-radius:7px;padding:5px 8px;font-size:8px;cursor:pointer}
+.module-head{display:flex;align-items:center;gap:12px;margin-bottom:15px}.module-icon{font-size:30px;background:#eef4ff;border-radius:12px;width:55px;height:55px;display:grid;place-items:center}.module-head h1{font-size:18px;margin:0}.module-head p{font-size:9px;color:var(--muted);margin:5px 0}
+.group{margin:17px 0}.group h3{font-size:11px;color:#52657c;border-bottom:1px solid #edf1f5;padding-bottom:8px}.services{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.service{border:1px solid #dfe7ef;border-radius:11px;padding:13px;cursor:pointer;background:#fbfdff}.service:hover{border-color:#74a7e5;box-shadow:0 4px 13px #274e7514}.service i{font-style:normal;font-size:20px}.service b{display:block;font-size:10px;margin:7px 0}.service span{font-size:8px;color:#2869c7}.empty{border:1px dashed #cbd5e1;background:#f8fafc;border-radius:11px;padding:30px;text-align:center;color:#8290a1;font-size:10px}
+.modal{display:none;position:fixed;inset:0;background:#0f172a77;align-items:center;justify-content:center;z-index:50}.modal.show{display:flex}.box{width:590px;max-width:92%;background:#fff;border-radius:15px;padding:19px}.detail{background:#f7f9fc;border:1px solid #e0e7ef;border-radius:10px;padding:12px;font-size:10px;line-height:2}.choices{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}.choices button{font-family:inherit;border:0;border-radius:9px;padding:10px;cursor:pointer}.yes{background:#dcfce7;color:#166534}.no{background:#fee2e2;color:#a61b1b}.rev{background:#fff3cd;color:#806000}.choices .sel{outline:2px solid #2869c7}.box textarea,.box input{width:100%;border:1px solid #d5dee8;border-radius:8px;padding:9px;font-family:inherit;margin:6px 0}.save{width:100%;background:#2869c7;color:#fff;border:0;border-radius:8px;padding:10px;font-family:inherit;cursor:pointer}
+@media(max-width:1000px){.sidebar{width:88%;left:-90%}.main{margin-right:0;width:100%}.favs{grid-template-columns:repeat(3,1fr)}.services{grid-template-columns:repeat(2,1fr)}}
+
+.flyout{position:fixed;left:310px;top:80px;width:300px;max-height:75vh;overflow:auto;background:#fff;border:1px solid #dce4ed;box-shadow:8px 8px 28px #172b4433;border-radius:0 12px 12px 0;z-index:60;padding:10px;display:none}.flyout.show{display:block}
+.fly-head{font-size:12px;font-weight:bold;padding:8px;border-bottom:1px solid #edf1f5}.fly-group{font-size:8px;color:#929eac;padding:9px 8px 3px}.fly-service{padding:8px;border-radius:7px;font-size:9px;cursor:pointer}.fly-service:hover{background:#eaf2ff;color:#1859a8}
+.worktabs{display:flex;gap:6px;overflow:auto;margin:0 0 10px}.worktab{min-width:155px;background:#fff;border:1px solid #dce4ed;border-radius:10px;padding:8px 9px;display:flex;gap:6px;align-items:center;font-size:9px;cursor:pointer}.worktab.active{background:#2869c7;color:#fff}.worktab.mini{min-width:58px;width:58px}.worktab.mini .tn{display:none}.worktab .tn{flex:1;white-space:nowrap}.worktab button{border:0;background:transparent;color:inherit;cursor:pointer}
+.workpage{display:none;background:#fff;border:1px solid #dfe7f0;border-radius:14px;padding:17px}.workpage.active{display:block}.workhead{display:flex;gap:10px;align-items:center;border-bottom:1px solid #edf1f5;padding-bottom:12px;margin-bottom:13px}.workhead i{font-style:normal;font-size:28px}.workhead h2{font-size:15px;margin:0}.workservices{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.workservice{border:1px solid #e0e7ef;border-radius:9px;padding:11px;font-size:9px;background:#fbfdff}
+
+/* Desktop-like resizable module windows */
+.window-layer{position:relative;min-height:0;margin-top:10px}
+.module-window{position:relative;display:inline-block;vertical-align:top;width:48%;height:360px;min-width:320px;min-height:220px;max-width:100%;margin:0 0 12px 1%;background:#fff;border:1px solid #cfdbe8;border-radius:12px;box-shadow:0 6px 20px #284d7618;overflow:auto;resize:both}
+.module-window.active-window{border-color:#7ca9df;box-shadow:0 7px 22px #2869c72b}
+.window-titlebar{position:sticky;top:0;z-index:3;height:45px;background:#f7f9fc;border-bottom:1px solid #e0e7ef;display:flex;align-items:center;gap:8px;padding:0 11px;cursor:default}
+.window-titlebar i{font-style:normal;font-size:19px}.window-titlebar b{font-size:10px;flex:1}.window-titlebar button{width:25px;height:25px;border:0;border-radius:6px;background:#e9eef5;cursor:pointer;font-size:12px}.window-titlebar .win-close:hover{background:#fee2e2;color:#a61b1b}
+.window-body{padding:13px}.window-services{display:grid;grid-template-columns:repeat(2,minmax(140px,1fr));gap:8px}.window-service{border:1px solid #e0e7ef;border-radius:9px;padding:11px;font-size:9px;background:#fbfdff;cursor:pointer}.window-service:hover{border-color:#78a9e5;background:#f3f8ff}
+.resize-hint{position:absolute;left:5px;bottom:3px;font-size:12px;color:#8da0b4;pointer-events:none}
+@media(max-width:850px){.module-window{display:block;width:100%;min-width:260px;margin-left:0}.window-services{grid-template-columns:1fr}}
+
+/* Service-specific workspace: Workforce Request */
+.req-list{width:100%;border-collapse:collapse;font-size:9px;margin-bottom:14px}.req-list th{background:#f5f8fc;color:#68788d;padding:9px;border-bottom:1px solid #dfe7f0}.req-list td{padding:9px;border-bottom:1px solid #edf1f5}.req-status{display:inline-block;padding:4px 7px;border-radius:9px;background:#fff3cd;color:#806000}
+.add-request-card{border:1px dashed #8fb5e2;background:#f7fbff;border-radius:10px;min-height:90px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;color:#2869c7;transition:.2s}.add-request-card:hover{background:#edf6ff;border-color:#2869c7}.add-request-card .plus{font-size:27px;line-height:1}.add-request-card b{font-size:9px;margin-top:5px}
+.request-form{display:none;margin-top:12px;border:1px solid #dce5ef;border-radius:10px;background:#f9fbfd;padding:13px}.request-form.show{display:block}.request-form h3{font-size:11px;margin:0 0 10px}.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.request-form label{font-size:8px;color:#64748b}.request-form input,.request-form select,.request-form textarea{width:100%;border:1px solid #d5dee8;border-radius:7px;padding:8px;font-family:inherit;font-size:9px;margin-top:4px;background:#fff}.request-form textarea{min-height:75px;resize:vertical}.form-full{grid-column:1/-1}.form-actions{display:flex;gap:7px;justify-content:flex-end;margin-top:10px}.form-actions button{font-family:inherit;border:0;border-radius:7px;padding:8px 15px;font-size:9px;cursor:pointer}.form-save{background:#2869c7;color:#fff}.form-cancel{background:#e9eef5;color:#53657a}
+
+.workspace-homebar{display:none;width:100%;box-sizing:border-box;margin:0 0 10px;padding:8px 12px;background:#f7f9fc;border:1px solid #dbe4ee;border-radius:9px;text-align:right}
+.workspace-homebar.show{display:block}.workspace-homebtn{background:#fff;border:1px solid #d3deea;border-radius:8px;padding:8px 13px;font-family:inherit;font-size:9px;font-weight:bold;color:#34506d;cursor:pointer;box-shadow:0 2px 7px rgba(0,0,0,.05)}.workspace-homebtn:hover{background:#edf4fb}
+
+/* ===== VISIBLY NEW UI / UX - V2 ===== */
+:root{--navy:#173a5e;--blue:#2878c8;--sky:#eaf4ff;--bg:#eef3f8;--line:#dbe5ef;--text:#20354a;--muted:#718197}
+body{background:var(--bg)!important;color:var(--text)!important}
+header{height:64px!important;background:linear-gradient(100deg,#173a5e,#245f91)!important;color:#fff!important;border:0!important;box-shadow:0 5px 18px rgba(22,55,88,.18)!important}
+header *{color:inherit}
+.dashboard-toggle{width:40px!important;height:40px!important;border-radius:12px!important;background:#fff!important;color:var(--navy)!important;border:0!important;font-size:18px!important;box-shadow:none!important}
+.chip{background:rgba(255,255,255,.12)!important;color:#fff!important;border:1px solid rgba(255,255,255,.18)!important;border-radius:10px!important}
+.content{padding:22px!important;max-width:1500px;margin:auto!important}
+
+/* drawer */
+.sidebar{background:#fff!important;border:0!important;box-shadow:14px 0 40px rgba(17,46,76,.16)!important;padding-top:14px!important}
+.nav{margin:4px 10px!important;padding:11px 12px!important;border-radius:11px!important;color:#435970!important;font-weight:600!important;border-right:3px solid transparent!important}
+.nav:hover{background:var(--sky)!important;color:var(--blue)!important;border-right-color:var(--blue)!important}
+.flyout{background:#fff!important;border:0!important;border-radius:16px!important;padding:10px!important;box-shadow:0 18px 45px rgba(22,55,88,.18)!important}
+.fly-head{background:linear-gradient(100deg,#edf6ff,#f7fbff)!important;color:#235f9b!important;border-radius:11px!important;padding:12px!important;font-weight:700!important}
+.fly-service{padding:10px 12px!important;border-radius:9px!important;margin:2px!important}
+.fly-service:hover{background:#edf6ff!important;color:#226ab2!important}
+
+/* obvious top workspace navigation */
+.workspace-homebar{display:none!important;background:#fff!important;border:0!important;border-radius:14px!important;padding:10px 12px!important;margin:0 0 14px!important;box-shadow:0 4px 18px rgba(28,55,82,.07)!important}
+.workspace-homebar.show{display:flex!important;align-items:center!important}
+.workspace-homebtn{background:var(--navy)!important;color:#fff!important;border:0!important;border-radius:10px!important;padding:10px 16px!important;box-shadow:none!important}
+
+/* work window */
+.module-window{width:48%!important;background:#fff!important;border:0!important;border-radius:18px!important;box-shadow:0 12px 35px rgba(24,54,83,.11)!important;overflow:auto!important}
+.module-window.active-window{outline:2px solid #b9d8f6!important;box-shadow:0 14px 40px rgba(32,91,147,.15)!important}
+.window-titlebar{height:54px!important;background:linear-gradient(90deg,#173a5e,#245f91)!important;color:#fff!important;border:0!important;border-radius:18px 18px 0 0!important;padding:0 15px!important}
+.window-titlebar i,.window-titlebar b{color:#fff!important}
+.window-titlebar button{background:rgba(255,255,255,.12)!important;color:#fff!important;border:0!important;width:29px!important;height:29px!important;border-radius:8px!important;margin-right:4px!important}
+.window-titlebar button:hover{background:rgba(255,255,255,.23)!important}
+.window-titlebar .win-close:hover{background:#d85858!important}
+.window-body{padding:20px!important;background:#fff!important}
+
+/* workforce page */
+.req-list{border-collapse:separate!important;border-spacing:0 7px!important;background:transparent!important}
+.req-list thead th{background:transparent!important;color:#8190a2!important;border:0!important;padding:7px 10px!important;font-size:8px!important}
+.req-list tbody tr{background:#f8fafc!important;box-shadow:0 1px 0 #e8eef4!important}
+.req-list td{border:0!important;padding:11px 10px!important}
+.req-list tbody tr:hover{background:#eef6ff!important}
+.req-list tbody td:first-child{border-radius:0 10px 10px 0!important}
+.req-list tbody td:last-child{border-radius:10px 0 0 10px!important}
+.req-status{background:#fff0d8!important;color:#9a6512!important;border-radius:20px!important;padding:5px 9px!important}
+.status.done{background:#e4f6ee!important;color:#26765e!important;border-radius:20px!important;padding:5px 9px!important}
+.open{background:#e9f3ff!important;color:#2268aa!important;border:0!important;border-radius:8px!important;padding:6px 10px!important;cursor:pointer!important}
+
+/* primary CTA is now a compact, clear button rather than a huge empty box */
+.add-request-card{min-height:auto!important;width:max-content!important;padding:10px 17px!important;flex-direction:row!important;gap:8px!important;border:0!important;border-radius:11px!important;background:var(--blue)!important;color:#fff!important;box-shadow:0 6px 16px rgba(40,120,200,.20)!important}
+.add-request-card:hover{background:#216db7!important;transform:translateY(-1px)!important}
+.add-request-card .plus{width:25px!important;height:25px!important;margin:0!important;background:rgba(255,255,255,.17)!important;color:#fff!important;font-size:18px!important}
+.add-request-card b{margin:0!important;color:#fff!important;font-size:9px!important}
+
+/* form as a distinct card */
+.request-form{margin-top:16px!important;background:#f8fafc!important;border:1px solid var(--line)!important;border-radius:14px!important;padding:18px!important}
+.request-form h3{font-size:12px!important;color:#29445f!important;margin-bottom:15px!important}
+.request-form input,.request-form select,.request-form textarea{border:1px solid #d7e2ec!important;border-radius:9px!important;padding:10px!important;background:#fff!important;outline:0!important}
+.request-form input:focus,.request-form select:focus,.request-form textarea:focus{border-color:#68a3dc!important;box-shadow:0 0 0 3px rgba(40,120,200,.10)!important}
+.form-save{background:var(--blue)!important;color:#fff!important;border-radius:9px!important;padding:9px 18px!important}
+.form-cancel{background:#e9eef3!important;color:#53677c!important;border-radius:9px!important}
+
+/* dashboard itself: cards feel like a modern workspace */
+.card,.stat,.quick-card,.service-card{background:#fff!important;border:0!important;border-radius:15px!important;box-shadow:0 5px 18px rgba(28,55,82,.07)!important}
+@media(max-width:900px){.module-window{width:100%!important}.content{padding:12px!important}}
+
+/* Drag & drop work windows */
+.window-titlebar{cursor:grab!important;user-select:none!important}
+.window-titlebar:active{cursor:grabbing!important}
+.module-window.dragging{opacity:.88!important;box-shadow:0 20px 48px rgba(22,55,88,.24)!important;outline:2px solid #7fb4e6!important;transform:scale(1.01)}
+.module-window.drag-over{outline:2px dashed #4f91d1!important;outline-offset:4px!important}
+.window-titlebar button{cursor:pointer!important}
+
+.service-page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px}
+.service-page-head h3{margin:0;font-size:12px;color:#29445f}
+.service-page-head p{margin:4px 0 0;font-size:8px;color:#8290a1}
+.service-history-title{font-size:10px;font-weight:700;color:#40556c;margin:17px 0 8px}
+.service-history{width:100%;border-collapse:separate;border-spacing:0 7px;font-size:9px}
+.service-history th{padding:7px 10px;text-align:center;color:#8190a2;font-size:8px;font-weight:600}
+.service-history td{padding:11px 10px;text-align:center;background:#f8fafc}
+.service-history tbody tr:hover td{background:#eef6ff}
+.service-history td:first-child{border-radius:0 10px 10px 0}.service-history td:last-child{border-radius:10px 0 0 10px}
+.service-empty{padding:18px;text-align:center;background:#f8fafc;border-radius:10px;color:#8492a3;font-size:9px}
+.assigned-tabs{display:flex;gap:10px;margin:0 0 17px;border-bottom:1px solid #dce5ee;padding-bottom:10px;flex-wrap:wrap}.assigned-tabs button{border:1px solid #dce6ef;background:#f7f9fc;color:#61758a;padding:11px 15px;border-radius:11px;font-family:inherit;cursor:pointer;font-weight:700}.assigned-tabs button.selected{background:#e8f3ff;color:#1e629e;border-color:#90bee9;box-shadow:0 3px 10px rgba(40,120,200,.10)}.assigned-tabs span{display:inline-block;background:#fff;border-radius:12px;padding:2px 7px;margin-right:6px}</style></head>
+<body>
+<div class="flyout" id="flyout" onmouseenter="keepFly()" onmouseleave="hideFly()"></div><div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+<div class="shell">
+<aside class="sidebar" id="serviceDrawer" onmouseleave="hideFly()"><button class="sidebar-close" onclick="closeDrawer()">×</button>
+<div class="logo">🏢 خدمات سازمانی</div><div class="sidebar-search"><span>🔎</span><input id="menuSearch" oninput="filterModules(this.value)" placeholder="جستجو در ماژول‌ها و خدمات..."></div>
+<div class="profile"><div class="avatar">👤</div><div><b>فرناز حیدری</b><small>کارشناس کنترل پروژه</small></div></div>
+<div class="nav on" data-page="desk" onclick="showDesk(this)"><i>🏠</i> میز کار</div>
+<div class="nav" data-page="tasks" onclick="showTasks(this)"><i>📥</i> کارهای من</div>
+<div class="nav" onclick="alert('در نسخه واقعی، لیست تمام درخواست‌های ثبت‌شده کاربر باز می‌شود.')"><i>📝</i> درخواست‌های من</div>
+<div class="nav" onclick="showDesk(this)"><i>⭐</i> دسترسی سریع من</div>
+<div class="sep"></div><div class="nav-title">خدمات سازمانی</div>
+<div id="moduleNav"></div>
+</aside>
+<main class="main"><header class="top"><b id="pageTitle">میز کار من</b><div class="top-actions"><button class="dashboard-toggle" onclick="toggleDrawer()" title="داشبورد خدمات سازمانی">☰</button><div class="chip">🔔 ۵</div><div class="chip">❓ راهنما</div></div></header><div class="content"><div id="workspaceHomebar" class="workspace-homebar"><button class="workspace-homebtn" onclick="goHome()">⌂  میز کار اصلی</button></div>
+<div class="window-layer" id="windowLayer"></div><div id="content"></div></div></main>
+</div>
+
+<div class="modal" id="actionModal"><div class="box"><div class="title"><h2>مشاهده و اقدام</h2><button onclick="closeModal()">✕</button></div><div class="detail" id="detail"></div><div class="choices"><button class="yes" onclick="pick('تأیید شده',this)">✓ تأیید</button><button class="no" onclick="pick('عدم تأیید',this)">✕ عدم تأیید</button><button class="rev" onclick="pick('در حال بررسی',this)">◷ در حال بررسی</button></div><textarea id="comment" placeholder="توضیحات / نظر..."></textarea><button class="save" onclick="saveAction()">ثبت اقدام</button></div></div>
+<div class="modal" id="requestModal"><div class="box"><div class="title"><h2 id="reqTitle">ثبت درخواست</h2><button onclick="document.getElementById('requestModal').classList.remove('show')">✕</button></div><input id="subject"><textarea placeholder="شرح درخواست..."></textarea><button class="save" onclick="alert('درخواست نمونه ثبت شد');document.getElementById('requestModal').classList.remove('show')">ثبت درخواست</button></div></div>
+
+<script>
+const modules={
+"فروش":{i:"📈",g:{"خدمات فروش":["درخواست‌های فروش اعتباری","درخواست مشاوره"]}},
+"منابع انسانی":{i:"👥",g:{"آموزش و توسعه":["درخواست دوره آموزشی","درخواست کتاب"],"امور پرسنلی":["درخواست‌های نیروی کار","درخواست‌های جابجایی پرسنل","درخواست جابجایی نیرو","درخواست استعفا"],"رفاهی و تسهیلات":["درخواست‌های وام","درخواست مساعده","درخواست لباس","درخواست‌های وسیله نقلیه"],"مهارت و شایستگی":["ثبت شایستگی همکار","ثبت مهارت‌های همکاران","ثبت شکایت از همکار"]}},
+"خرید":{i:"🛒",g:{}},
+"سیستم‌ها و روش‌ها":{i:"⚙️",g:{}},
+"کنترل کیفی":{i:"🧪",g:{}},
+"فناوری اطلاعات":{i:"💻",g:{"خدمات فناوری":["درخواست‌های واحد نرم‌افزار","سامانه ارتباطات داخلی"]}},
+"بازاریابی":{i:"📣",g:{"رسانه و محتوا":["درخواست کارهای گرافیکی","درخواست‌های واحد سایت","درخواست کارهای ویدئویی"]}},
+"حسابداری":{i:"🧮",g:{"امور مالی":["درخواست بدون اقدام کردن چک","درخواست برگشت وجه","پرداخت خسارت"]}},
+"اداری":{i:"🏢",g:{"امور اداری":["ارجاعات سازمانی","درخواست شعب"],"پروژه‌ها":["پروژه‌های تحقیق و توسعه محصول","پروژه‌های تحقیق و توسعه"]}},
+"مدیریت":{i:"👔",g:{"ارتباطات و خدمات مدیریتی":["روابط عمومی","درخواست ملاقات با مدیریت"]}},
+"تعمیر و نگهداری":{i:"🔧",g:{}},
+"حقوقی":{i:"⚖️",g:{"حقوقی":["سامانه واحد حقوقی"]}}
+};
+let tasks=[
+{name:"بررسی درخواست فروش اعتباری",m:"فروش",no:"F-1048",date:"1405/06/29",s:"نیازمند اقدام"},
+{name:"تأیید درخواست دوره آموزشی",m:"منابع انسانی",no:"HR-826",date:"1405/06/28",s:"در انتظار تأیید"},
+{name:"بررسی خدمات نرم‌افزار",m:"فناوری اطلاعات",no:"IT-531",date:"1405/06/28",s:"در حال بررسی"},
+{name:"بررسی درخواست شعب",m:"اداری",no:"AD-219",date:"1405/06/27",s:"نیازمند اقدام"},
+{name:"پیگیری ملاقات با مدیریت",m:"مدیریت",no:"MG-118",date:"1405/06/26",s:"در حال بررسی"},
+{name:"بررسی برگشت وجه",m:"حسابداری",no:"AC-342",date:"1405/06/25",s:"انجام شده"}
+];
+let favs=[["🎓","دوره آموزشی","منابع انسانی"],["💰","وام","منابع انسانی"],["💻","خدمات نرم‌افزار","فناوری اطلاعات"],["🔄","جابجایی نیرو","منابع انسانی"],["🚗","وسیله نقلیه","منابع انسانی"],["🤝","ملاقات مدیریت","مدیریت"]];
+let activeTask=null,decision=null,taskTab="active",taskView="desk";
+tasks.forEach(t=>{t.finished=(t.s==="انجام شده"||t.s==="تأیید شده"||t.s==="عدم تأیید");});
+
+
+function toggleDrawer(){
+ document.getElementById("serviceDrawer").classList.toggle("open");
+ document.getElementById("drawerOverlay").classList.toggle("show");
+}
+function closeDrawer(){
+ document.getElementById("serviceDrawer").classList.remove("open");
+ document.getElementById("drawerOverlay").classList.remove("show");
+}
+function filterModules(q){
+ q=q.trim();
+ let e=document.getElementById("moduleNav"); e.innerHTML="";
+ Object.entries(modules).forEach(([n,v])=>{
+   const services=Object.values(v.g).flat();
+   const matched=services.filter(s=>s.includes(q));
+   if(q && !n.includes(q) && !matched.length) return;
+   e.innerHTML+=`<div class="nav" onclick="showModule('${n}',this);closeDrawer()"><i>${v.i}</i>${n}</div>`;
+   if(q && matched.length){
+     matched.forEach(s=>e.innerHTML+=`<div style="font-size:8px;padding:6px 35px 6px 8px;cursor:pointer;color:#53677e" onclick="openWork('${n}','${s}');closeDrawer()">↳ ${s}</div>`);
+   }
+ });
+ if(!e.innerHTML)e.innerHTML='<div style="padding:15px;font-size:9px;color:#8a98a8">نتیجه‌ای پیدا نشد.</div>';
+}
+
+function nav(){
+ let e=document.getElementById("moduleNav");e.innerHTML="";
+ Object.entries(modules).forEach(([n,v])=>e.innerHTML+=`<div class="nav" onmouseenter="scheduleFly('${n}',this)" onmouseleave="leaveModule('${n}')" onclick="openWork('${n}');closeMenusImmediately()"><i>${v.i}</i>${n}<span style="margin-right:auto">◀</span></div>`);
+}
+let flyTimer=null, closeFlyTimer=null, pendingFly=null, currentFly=null, openWindows=[], activeWindow=null;
+const FLY_OPEN_DELAY=500;
+const FLY_CLOSE_DELAY=600;
+
+function renderFly(name,anchor){
+ let m=modules[name], f=document.getElementById("flyout");
+ let body=Object.entries(m.g).map(([g,a])=>`<div class="fly-group">${g}</div>${a.map(x=>`<div class="fly-service" onclick="openWork('${name}','${x}');closeMenusImmediately()">${x}</div>`).join("")}`).join("");
+ f.innerHTML=`<div class="fly-head">${m.i} ${name}</div>${body||'<div class="empty">فعلاً خدمتی تعریف نشده است.</div>'}`;
+
+ // زیرمنو دقیقاً روبه‌روی همان ردیف ماژول قرار می‌گیرد.
+ if(anchor){
+   const r=anchor.getBoundingClientRect();
+   const maxTop=window.innerHeight-Math.min(f.scrollHeight||420, window.innerHeight*.75)-12;
+   f.style.top=Math.max(8,Math.min(r.top,maxTop))+"px";
+ }
+ f.classList.add("show"); currentFly=name; pendingFly=null;
+}
+function scheduleFly(name,anchor){
+ clearTimeout(closeFlyTimer);
+ clearTimeout(flyTimer);
+ pendingFly=name;
+ flyTimer=setTimeout(function(){
+   if(pendingFly===name) renderFly(name,anchor);
+ },FLY_OPEN_DELAY);
+}
+function leaveModule(name){
+ if(pendingFly===name){pendingFly=null;clearTimeout(flyTimer);}
+ // اگر یک زیرمنو باز است، هنگام عبور از ردیف‌ها همان را نگه می‌داریم.
+}
+function keepFly(){
+ clearTimeout(closeFlyTimer);clearTimeout(flyTimer);pendingFly=null;
+}
+function hideFly(){
+ clearTimeout(flyTimer);pendingFly=null;
+ clearTimeout(closeFlyTimer);
+ closeFlyTimer=setTimeout(function(){
+   document.getElementById("flyout").classList.remove("show");currentFly=null;
+ },FLY_CLOSE_DELAY);
+}
+
+function closeMenusImmediately(){
+ clearTimeout(flyTimer);
+ clearTimeout(closeFlyTimer);
+ pendingFly=null;
+ currentFly=null;
+ const f=document.getElementById("flyout");
+ if(f) f.classList.remove("show");
+ closeDrawer();
+}
+function openWork(name,service){
+ let key=service ? name+'::'+service : name;
+ if(!openWindows.some(x=>x.key===key)) openWindows.push({key:key,name:name,service:service||null,min:false,max:false});
+ activeWindow=key; renderWindows();
+}
+function workforceBody(){
+ return `<div>
+   <div style="font-size:10px;font-weight:bold;margin-bottom:9px">درخواست‌های نیروی کار ثبت‌شده من</div>
+   <div class="add-request-card" onclick="toggleWorkforceForm(event)"><div class="plus">＋</div><b>ثبت نیروی کار</b></div>
+   <div class="service-history-title">درخواست‌های قبلی ثبت‌شده من</div>
+   <div style="overflow:auto"><table class="req-list"><thead><tr><th>شماره</th><th>عنوان درخواست</th><th>واحد</th><th>تاریخ ثبت</th><th>وضعیت</th><th>عملیات</th></tr></thead><tbody id="workforceRows">
+     <tr><td>HR-1042</td><td>درخواست نیروی کارشناس فروش</td><td>فروش</td><td>1405/06/27</td><td><span class="req-status">در حال بررسی</span></td><td><button class="open">مشاهده</button></td></tr>
+     <tr><td>HR-0986</td><td>درخواست نیروی انبار</td><td>انبار</td><td>1405/06/12</td><td><span class="status done">تأیید شده</span></td><td><button class="open">مشاهده</button></td></tr>
+   </tbody></table></div>
+   <div class="request-form" id="workforceForm" onclick="event.stopPropagation()">
+    <h3>فرم ثبت درخواست نیروی کار</h3>
+    <div class="form-grid">
+      <label>عنوان درخواست<input id="wfTitle" placeholder="مثلاً کارشناس فروش"></label>
+      <label>واحد درخواست‌کننده<select><option>انتخاب واحد</option><option>فروش</option><option>منابع انسانی</option><option>اداری</option></select></label>
+      <label>تعداد نیروی مورد نیاز<input type="number" min="1" value="1"></label>
+      <label>نوع همکاری<select><option>تمام وقت</option><option>پاره وقت</option><option>قراردادی</option></select></label>
+      <label class="form-full">شرح نیاز<textarea placeholder="شرح درخواست و شرایط مورد نیاز..."></textarea></label>
+    </div>
+    <div class="form-actions"><button class="form-cancel" onclick="toggleWorkforceForm(event)">انصراف</button><button class="form-save" onclick="saveWorkforce(event)">ثبت درخواست</button></div>
+   </div>
+ </div>`;
+}
+function genericServiceBody(service){
+ let rows=[
+   {no:"REQ-1405-031",date:"1405/06/28",status:"در حال بررسی"},
+   {no:"REQ-1405-024",date:"1405/06/19",status:"تأیید شده"},
+   {no:"REQ-1405-011",date:"1405/06/08",status:"ثبت اولیه"}
+ ];
+ return `<div class="service-page-head"><div><h3>${service}</h3><p>ثبت درخواست جدید و مشاهده سوابق درخواست‌های شما</p></div></div>
+ <div class="add-request-card" onclick="toggleGenericForm(event,'${service}')"><div class="plus">＋</div><b>ثبت ${service}</b></div>
+ <div class="request-form" id="genericServiceForm" onclick="event.stopPropagation()">
+   <h3>فرم ثبت ${service}</h3>
+   <div class="form-grid">
+     <label>موضوع<input placeholder="موضوع درخواست"></label>
+     <label>اولویت<select><option>عادی</option><option>مهم</option><option>فوری</option></select></label>
+     <label class="form-full">شرح درخواست<textarea placeholder="توضیحات درخواست..."></textarea></label>
+   </div>
+   <div class="form-actions"><button class="form-cancel" onclick="toggleGenericForm(event)">انصراف</button><button class="form-save" onclick="saveGenericRequest(event,'${service}')">ثبت درخواست</button></div>
+ </div>
+ <div class="service-history-title">درخواست‌های قبلی ثبت‌شده من</div>
+ <div style="overflow:auto"><table class="service-history"><thead><tr><th>شماره درخواست</th><th>عنوان</th><th>تاریخ ثبت</th><th>وضعیت</th><th>عملیات</th></tr></thead>
+ <tbody id="genericHistoryRows">${rows.map(r=>`<tr><td>${r.no}</td><td>${service}</td><td>${r.date}</td><td><span class="${r.status==="تأیید شده"?"status done":"req-status"}">${r.status}</span></td><td><button class="open">مشاهده</button></td></tr>`).join("")}</tbody></table></div>`;
+}
+function toggleGenericForm(e){e.stopPropagation();let f=document.getElementById("genericServiceForm");if(f)f.classList.toggle("show")}
+function saveGenericRequest(e,service){
+ e.stopPropagation();let rows=document.getElementById("genericHistoryRows");
+ if(rows)rows.insertAdjacentHTML("afterbegin",`<tr><td>REQ-NEW</td><td>${service}</td><td>امروز</td><td><span class="req-status">ثبت اولیه</span></td><td><button class="open">مشاهده</button></td></tr>`);
+ let f=document.getElementById("genericServiceForm");if(f)f.classList.remove("show");
+}
+function goHome(){openWindows=[];activeWindow=null;const f=document.getElementById("flyout");if(f)f.classList.remove("show");renderWindows();window.scrollTo(0,0);}
+function renderWindows(){
+ let layer=document.getElementById("windowLayer");
+ layer.innerHTML=openWindows.map(x=>{
+   let m=modules[x.name], services=Object.values(m.g).flat();
+   let style=x.min?'height:45px;resize:none;overflow:hidden;':(x.max?'width:100%;height:70vh;display:block;resize:both;':'');
+   let title=x.service||x.name;
+   let body=x.service ? (x.service==='درخواست‌های نیروی کار'?workforceBody():genericServiceBody(x.service))
+                      : `<div class="window-services">${services.length?services.map(z=>`<div class="window-service" onclick="openWork('${x.name}','${z}')">${z}</div>`).join(""):'<div class="empty">فعلاً خدمتی تعریف نشده است.</div>'}</div>`;
+   return `<section class="module-window ${x.key===activeWindow?'active-window':''}" data-key="${x.key}" draggable="true" style="${style}" onclick="focusWindow('${x.key}',event)" ondragstart="windowDragStart(event,'${x.key}')" ondragover="windowDragOver(event,'${x.key}')" ondragleave="windowDragLeave(event)" ondrop="windowDrop(event,'${x.key}')" ondragend="windowDragEnd(event)">
+    <div class="window-titlebar"><i>${m.i}</i><b>${title}</b>
+      <button title="جمع کردن" draggable="false" onmousedown="event.stopPropagation()" onclick="minWindow(event,'${x.key}')">—</button>
+      <button title="بزرگ/بازگردانی" draggable="false" onmousedown="event.stopPropagation()" onclick="maxWindow(event,'${x.key}')">□</button>
+      <button class="win-close" title="بستن" draggable="false" onmousedown="event.stopPropagation()" onclick="closeWindow(event,'${x.key}')">×</button>
+    </div>
+    <div class="window-body">${body}</div><span class="resize-hint">◢</span>
+   </section>`
+ }).join("");
+ document.getElementById("content").style.display=openWindows.length?"none":"block";const hb=document.getElementById("workspaceHomebar");if(hb)hb.classList.toggle("show",openWindows.length>0);
+}
+
+let draggedWindowKey=null;
+function windowDragStart(e,key){
+ // Dragging is initiated from the window; controls are protected separately.
+ draggedWindowKey=key;
+ activeWindow=key;
+ e.dataTransfer.effectAllowed="move";
+ e.dataTransfer.setData("text/plain",key);
+ setTimeout(()=>{if(e.currentTarget)e.currentTarget.classList.add("dragging")},0);
+}
+function windowDragOver(e,targetKey){
+ e.preventDefault();
+ if(!draggedWindowKey || draggedWindowKey===targetKey)return;
+ e.dataTransfer.dropEffect="move";
+ document.querySelectorAll(".module-window").forEach(w=>w.classList.remove("drag-over"));
+ const target=e.currentTarget;
+ if(target)target.classList.add("drag-over");
+}
+function windowDragLeave(e){
+ if(e.currentTarget)e.currentTarget.classList.remove("drag-over");
+}
+function windowDrop(e,targetKey){
+ e.preventDefault();e.stopPropagation();
+ document.querySelectorAll(".module-window").forEach(w=>w.classList.remove("drag-over","dragging"));
+ const sourceKey=draggedWindowKey || e.dataTransfer.getData("text/plain");
+ if(!sourceKey || sourceKey===targetKey){draggedWindowKey=null;return;}
+ const from=openWindows.findIndex(x=>x.key===sourceKey);
+ const to=openWindows.findIndex(x=>x.key===targetKey);
+ if(from<0 || to<0){draggedWindowKey=null;return;}
+ const moved=openWindows.splice(from,1)[0];
+ openWindows.splice(to,0,moved);
+ activeWindow=sourceKey;
+ draggedWindowKey=null;
+ renderWindows();
+}
+function windowDragEnd(e){
+ draggedWindowKey=null;
+ document.querySelectorAll(".module-window").forEach(w=>w.classList.remove("drag-over","dragging"));
+}
+function focusWindow(k,e){activeWindow=k;document.querySelectorAll(".module-window").forEach(w=>w.classList.remove("active-window"));if(e&&e.currentTarget)e.currentTarget.classList.add("active-window")}
+function closeWindow(e,k){e.stopPropagation();openWindows=openWindows.filter(x=>x.key!==k);if(activeWindow===k)activeWindow=openWindows.length?openWindows[openWindows.length-1].key:null;renderWindows()}
+function minWindow(e,k){e.stopPropagation();let x=openWindows.find(x=>x.key===k);x.min=!x.min;if(x.min)x.max=false;renderWindows()}
+function maxWindow(e,k){e.stopPropagation();let x=openWindows.find(x=>x.key===k);x.max=!x.max;x.min=false;renderWindows()}
+function toggleWorkforceForm(e){e.stopPropagation();let f=document.getElementById("workforceForm");if(f)f.classList.toggle("show")}
+function saveWorkforce(e){
+ e.stopPropagation();let title=document.getElementById("wfTitle")?.value||"درخواست نیروی کار جدید";
+ let rows=document.getElementById("workforceRows");
+ if(rows)rows.insertAdjacentHTML("afterbegin",`<tr><td>HR-NEW</td><td>${title}</td><td>واحد جاری</td><td>امروز</td><td><span class="req-status">ثبت اولیه</span></td><td><button class="open">مشاهده</button></td></tr>`);
+ let f=document.getElementById("workforceForm");if(f)f.classList.remove("show");
+}
+function active(el){document.querySelectorAll(".nav").forEach(x=>x.classList.remove("on"));if(el)el.classList.add("on")}
+function searchBox(){return `<div class="search"><span>🔎</span><input oninput="globalSearch(this.value)" placeholder="چه کاری می‌خواهید انجام دهید؟ وام، دوره آموزشی، ملاقات، نرم‌افزار..."></div>`}
+function favHTML(){return `<div class="panel"><div class="title"><h2>⭐ دسترسی سریع من</h2><span>قابل شخصی‌سازی</span></div><div class="favs">${favs.map((x,i)=>`<div class="fav" onclick="openRequest('${x[1]}')"><button class="x" onclick="removeFav(event,${i})">×</button><i>${x[0]}</i><b>${x[1]}</b><small>${x[2]}</small></div>`).join("")}</div></div>`}
+function taskTabs(){return `<div class="assigned-tabs"><button class="${taskTab==='active'?'selected':''}" onclick="switchTaskTab('active')">◷ کارهای محول شده در جریان <span>${tasks.filter(x=>!x.finished).length}</span></button><button class="${taskTab==='done'?'selected':''}" onclick="switchTaskTab('done')">✓ کارهای محول شده انجام شده <span>${tasks.filter(x=>x.finished).length}</span></button></div>`}
+function switchTaskTab(tab){taskTab=tab;if(taskView==='tasks')showTasks(document.querySelector('[data-page="tasks"]'));else showDesk(document.querySelector('[data-page="desk"]'))}
+function taskTable(limit){
+ let list=tasks.filter(x=>taskTab==='done'?x.finished:!x.finished);
+ if(limit)list=list.slice(0,limit);
+ return `<div style="overflow:auto"><table><thead><tr><th>کار</th><th>ماژول</th><th>شماره</th><th>تاریخ</th><th>وضعیت</th><th>عملیات</th></tr></thead><tbody>${list.map(x=>`<tr><td><b>${x.name}</b></td><td><span class="tag">${x.m}</span></td><td>${x.no}</td><td>${x.date}</td><td><span class="status ${statusClass(x.s)}">${x.s}</span></td><td><button class="open" onclick="openTask('${x.no}')">${x.finished?'مشاهده':'مشاهده / اقدام'}</button></td></tr>`).join('')||`<tr><td colspan="6" style="text-align:center;padding:25px;color:#8090a0">کاری در این بخش وجود ندارد.</td></tr>`}</tbody></table></div>`
+}
+function statusClass(s){if(s==="نیازمند اقدام"||s==="عدم تأیید")return"action";if(s==="در حال بررسی")return"review";if(s==="در انتظار تأیید")return"wait";return"done"}
+function showDesk(el){
+ taskView="desk";
+ active(el||document.querySelector('[data-page="desk"]'));document.getElementById("pageTitle").textContent="میز کار من";
+ document.getElementById("content").innerHTML=`<div class="hero"><div><h1>سلام فرناز 👋</h1><p>کارهای روزانه، درخواست‌ها و خدمات موردنیازت را از یک جا مدیریت کن.</p></div><div style="font-size:35px">🏢</div></div>${searchBox()}<div class="stats"><div class="stat"><i>📥</i><div><b>4</b><small>نیازمند اقدام</small></div></div><div class="stat"><i>🕐</i><div><b>5</b><small>در حال بررسی</small></div></div><div class="stat"><i>✓</i><div><b>12</b><small>تأیید شده</small></div></div><div class="stat"><i>📝</i><div><b>23</b><small>درخواست‌های من</small></div></div></div>${favHTML()}<div class="panel"><div class="title"><h2>📥 کارهای محول شده</h2><button onclick="showTasks(document.querySelector('[data-page=tasks]'))">مشاهده همه</button></div>${taskTabs()}${taskTable(5)}</div>`;
+}
+function showTasks(el){taskView="tasks";active(el);document.getElementById("pageTitle").textContent="کارهای محول شده";document.getElementById("content").innerHTML=`<div class="module-head"><div class="module-icon">📥</div><div><h1>کارهای محول شده</h1><p>پیگیری کارهای در جریان و سوابق اقدامات انجام‌شده</p></div></div><div class="panel">${taskTabs()}${taskTable()}</div>`}
+function showModule(name,el){
+ active(el);let m=modules[name];document.getElementById("pageTitle").textContent=name;
+ let groups=Object.entries(m.g).map(([g,items])=>`<div class="group"><h3>${g}</h3><div class="services">${items.map(x=>`<div class="service" onclick="openRequest('${x}')"><i>${m.i}</i><b>${x}</b><span>ثبت درخواست ←</span></div>`).join("")}</div></div>`).join("");
+ document.getElementById("content").innerHTML=`<div class="module-head"><div class="module-icon">${m.i}</div><div><h1>${name}</h1><p>خدمات و درخواست‌های حوزه ${name}</p></div></div>${searchBox()}<div class="panel">${groups||`<div class="empty">فعلاً خدمتی برای این ماژول تعریف نشده است.</div>`}</div>`;
+}
+function globalSearch(q){
+ q=q.trim();if(!q)return;
+ for(const [m,v] of Object.entries(modules))for(const items of Object.values(v.g))for(const x of items)if(x.includes(q)){showModule(m,null);setTimeout(()=>{let cards=[...document.querySelectorAll(".service")];let c=cards.find(z=>z.innerText.includes(x));if(c){c.style.outline="2px solid #2869c7";c.scrollIntoView({behavior:"smooth",block:"center"})}},30);return}
+}
+function removeFav(e,i){e.stopPropagation();favs.splice(i,1);showDesk(document.querySelector('[data-page="desk"]'))}
+function openRequest(n){document.getElementById("reqTitle").textContent="ثبت درخواست — "+n;document.getElementById("subject").value=n;document.getElementById("requestModal").classList.add("show")}
+function openTask(no){activeTask=tasks.find(x=>x.no===no);decision=null;document.querySelectorAll(".choices button").forEach(x=>x.classList.remove("sel"));document.getElementById("detail").innerHTML=`<b>${activeTask.name}</b><br>ماژول: ${activeTask.m} &nbsp; | &nbsp; شماره: ${activeTask.no}<br>تاریخ: ${activeTask.date} &nbsp; | &nbsp; وضعیت فعلی: ${activeTask.s}`;document.querySelector("#actionModal .choices").style.display=activeTask.finished?"none":"flex";document.querySelector("#actionModal .save").style.display=activeTask.finished?"none":"block";document.getElementById("actionModal").classList.add("show")}
+function pick(d,b){decision=d;document.querySelectorAll(".choices button").forEach(x=>x.classList.remove("sel"));b.classList.add("sel")}
+function saveAction(){if(!decision){alert("یک اقدام انتخاب کنید.");return}activeTask.s=decision;if(decision==="تأیید شده"||decision==="عدم تأیید")activeTask.finished=true;closeModal();if(taskView==="tasks")showTasks(document.querySelector('[data-page="tasks"]'));else showDesk(document.querySelector('[data-page="desk"]'))}
+function closeModal(){document.getElementById("actionModal").classList.remove("show")}
+nav();showDesk(document.querySelector('[data-page="desk"]'));
+</script></body></html>
